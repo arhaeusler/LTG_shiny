@@ -1,6 +1,6 @@
 # LTG_shiny
 
-Repository of for shiny app to explore data associated with LTG's paper.
+Repository for shiny app to explore data associated with LTG's paper.
 
 To launch shiny app in R, use shiny(v1.9.1) and the command:
   runGitHub("LTG_shiny", "arhaeusler")
