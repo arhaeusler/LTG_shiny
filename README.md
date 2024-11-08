@@ -1,8 +1,11 @@
 # LTG_shiny
 
-Repository of for shiny app to explore data associated with LTG's paper
+Repository of for shiny app to explore data associated with LTG's paper.
 
-If using, please cite:
+To launch shiny app in R, use shiny(v1.9.1) and the command:
+  runGitHub("LTG_shiny", "arhaeusler")
+
+If using, please cite paper:
 (citation here)
 
 Publicly available RNA-seq data found on NCBI GEO (GEO accession # here)
