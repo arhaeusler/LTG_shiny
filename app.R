@@ -25,7 +25,7 @@ ui <- fluidPage(
       uiOutput("timeSelect"),
       uiOutput("groupSelect"),
       checkboxInput("selectAllGenes", "Select All Genes", FALSE),
-      textInput("genes", "Enter Human Gene Symbol (comma-separated with no spaces)", ""),
+      textInput("genes", "Enter Gene Symbol (comma-separated)", ""),
       br(),
       tags$b("Example Input: FOS,C9orf72,WASH7P"),
       br(),
@@ -49,7 +49,7 @@ ui <- fluidPage(
                    column(10, plotOutput("volcanoPlot_C9_TTX_TEA"))
                  )
         ),
-        tabPanel("KCL Volcano",
+        tabPanel("KCl Volcano",
                  fluidRow(
                    column(10, plotOutput("volcanoPlot_KCL_C902")),
                    column(10, plotOutput("volcanoPlot_KCL_C906")),
@@ -64,12 +64,12 @@ ui <- fluidPage(
                    column(6, plotOutput("expressionPlot_TEA"))
                  )
         ),
-        tabPanel("KCL Expression over Time",
+        tabPanel("Expression over KCl depolarization time",
                  fluidRow(
                    column(12, plotOutput("expressionPlot_KCL"))
                  )
         ),
-        tabPanel("TEA Pseudotime",
+        tabPanel("Expression over excitability pseudotime",
                  fluidRow(
                    column(12, plotOutput("pseudotime_TEA"))
                  )
@@ -80,7 +80,7 @@ ui <- fluidPage(
         #            column(6, plotOutput("pcaPlot_UT")),
         #            column(6, plotOutput("pcaPlot_TEA"))
         #          )
-        # )
+        #)
       )
     )
   ),
@@ -318,7 +318,7 @@ server <- function(input, output, session) {
       drawConnectors = TRUE,
       widthConnectors = 1.0,
       colConnectors = 'black') +
-      ggtitle("KCl: C90 vs C92") +
+      ggtitle("KCl-depolarized i3Neurons: C9-NRE 0-hours vs. C9-NRE 2-hours") +
       theme(plot.title = element_text(hjust = 0.5))
   })
   
@@ -363,7 +363,7 @@ server <- function(input, output, session) {
       drawConnectors = TRUE,
       widthConnectors = 1.0,
       colConnectors = 'black') +
-      ggtitle("KCl: C90 vs C96") +
+      ggtitle("KCl-depolarized i3Neurons: C9-NRE 0-hours vs. C9-NRE 6-hours") +
       theme(plot.title = element_text(hjust = 0.5))
   })
   
@@ -408,7 +408,7 @@ server <- function(input, output, session) {
       drawConnectors = TRUE,
       widthConnectors = 1.0,
       colConnectors = 'black') +
-      ggtitle("KCl: WT0 vs WT2") +
+      ggtitle("KCl-depolarized i3Neurons: WT 0-hours vs. WT 2-hours") +
       theme(plot.title = element_text(hjust = 0.5))
   })
   
@@ -453,7 +453,7 @@ server <- function(input, output, session) {
       drawConnectors = TRUE,
       widthConnectors = 1.0,
       colConnectors = 'black') +
-      ggtitle("KCl: WT0 vs WT6") +
+      ggtitle("KCl-depolarized i3Neurons: WT 0-hours vs. WT 6-hours") +
       theme(plot.title = element_text(hjust = 0.5))
   })
   ## end KCL volcano plots
@@ -612,6 +612,7 @@ server <- function(input, output, session) {
       geom_point(size = 3) + 
       scale_color_manual(values = custom_colors) +
       facet_wrap(~Gene) +
+      xlab("Hours of Depolarization")
       ggtitle("KCl expression over time")
     expressionPlot_KCL
   })
@@ -658,8 +659,8 @@ server <- function(input, output, session) {
   })
   ## End KCl expression over time
   
-  ## PCA   
-  #TTX
+  # ## PCA   
+  # #TTX
   # output$pcaPlot_TTX <- renderPlot({ 
   #   df <- unfiltered_data_tea()
   #   df_pca_ttx <- df %>%
