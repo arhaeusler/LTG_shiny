@@ -28,8 +28,8 @@ ui <- fluidPage(
       textInput("genes", "Enter Human Gene Symbol (comma-separated with no spaces)", ""),
       br(),
       tags$b("Example Input: FOS,C9orf72,WASH7P"),
-      actionButton("update", "Update"),
       br(),
+      actionButton("update", "Update"),
       br(),
       #downloadButton("downloadPlots", "Downlaod All Plots"),   ## UNDER CONSTRUCTION ##
       br(),br(),
