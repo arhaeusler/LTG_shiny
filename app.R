@@ -25,7 +25,9 @@ ui <- fluidPage(
       uiOutput("timeSelect"),
       uiOutput("groupSelect"),
       checkboxInput("selectAllGenes", "Select All Genes", FALSE),
-      textInput("genes", "Enter Gene Symbol (comma-separated)", ""),
+      textInput("genes", "Enter Human Gene Symbol (comma-separated with no spaces)", ""),
+      br(),
+      tags$q("Example Input: FOS,C9orf72,WASH7P"),
       actionButton("update", "Update"),
       br(),
       br(),
@@ -72,13 +74,13 @@ ui <- fluidPage(
                    column(12, plotOutput("pseudotime_TEA"))
                  )
         ),
-        tabPanel("PCA",
-                 fluidRow(
-                   column(6, plotOutput("pcaPlot_TTX")),
-                   column(6, plotOutput("pcaPlot_UT")),
-                   column(6, plotOutput("pcaPlot_TEA"))
-                 )
-        )
+        # tabPanel("PCA",
+        #          fluidRow(
+        #            column(6, plotOutput("pcaPlot_TTX")),
+        #            column(6, plotOutput("pcaPlot_UT")),
+        #            column(6, plotOutput("pcaPlot_TEA"))
+        #          )
+        # )
       )
     )
   ),
@@ -658,152 +660,152 @@ server <- function(input, output, session) {
   
   ## PCA   
   #TTX
-  output$pcaPlot_TTX <- renderPlot({ 
-    df <- unfiltered_data_tea()
-    df_pca_ttx <- df %>%
-      dplyr::select(Gene, ends_with("TTX_rlog"))
-    colnames(df_pca_ttx) = gsub("_rlog$", "", colnames(df_pca_ttx))
-    df_pca_ttx2 <- df_pca_ttx %>%
-      dplyr::filter(Gene != "NA") %>%
-      column_to_rownames("Gene") %>%
-      t() %>%
-      as.data.frame()
-    
-    anno <- annotation_data()
-    pca_anno_ttx <- anno %>%
-      dplyr::filter(str_detect(SampleID, "TTX"))
-    
-    group_ID <- as.factor(pca_anno_ttx$Line)
-    group_ID2 <- as.factor(pca_anno_ttx$Condition)
-    #colors purple for C9 and grey for WT
-    custom_colors <- c("C9_Line1" = "#6A0DAD",  # Dark purple
-                       "C9_Line2" = "#9370DB",  # Medium purple
-                       "C9_Line3" = "#b27faa", #light purple
-                       "WT_Line1" = "#2F4F4F",  # Dark slate grey
-                       "WT_Line2" = "#A9A9A9",  # Dark grey
-                       "WT_Line3" = "#D3D3D3")  # Light grey
-    
-    combined_colors <- c("C9" = "#9370DB",  # Medium purple
-                         "WT" = "#A9A9A9")  # Dark grey
-    
-    res.pca <- PCA(df_pca_ttx2, graph = FALSE) 
-    p <- fviz_pca_ind(res.pca,
-                      geom.ind = "point",
-                      fill.ind = group_ID, col.ind = "black",
-                      mean.point = FALSE,
-                      pointshape = 21, pointsize = "cos2",
-                      palette = custom_colors,
-                      addEllipses = TRUE,
-                      col.var = "contrib",
-                      repel = TRUE,
-                      select.var = list(cos2 = 10), legend.title = list(fill = "Group", color="Contrib"),
-                      habillage = group_ID2,
-                      palette.ellipse = combined_colors) +
-      ggtitle("TTX silenced") +
-      theme(plot.title = element_text(hjust = 0.5))
-    
-    p2 <- p + scale_color_manual(values = combined_colors, name = "Condition")
-    p2
-    
-  })
-  
-  #TEA
-  output$pcaPlot_TEA <- renderPlot({ 
-    df <- unfiltered_data_tea()
-    df_pca_tea <- df %>%
-      dplyr::select(Gene, ends_with("TEA_rlog"))
-    colnames(df_pca_tea) = gsub("_rlog$", "", colnames(df_pca_tea))
-    df_pca_tea2 <- df_pca_tea %>%
-      dplyr::filter(Gene != "NA") %>%
-      column_to_rownames("Gene") %>%
-      t() %>%
-      as.data.frame()
-    
-    anno <- annotation_data()
-    pca_anno_tea <- anno %>%
-      dplyr::filter(str_detect(SampleID, "TEA"))
-    
-    custom_colors <- c("C9_Line1" = "#6A0DAD",  # Dark purple
-                       "C9_Line2" = "#9370DB",  # Medium purple
-                       "C9_Line3" = "#b27faa", #light purple
-                       "WT_Line1" = "#2F4F4F",  # Dark slate grey
-                       "WT_Line2" = "#A9A9A9",  # Dark grey
-                       "WT_Line3" = "#D3D3D3")  # Light grey
-    
-    combined_colors <- c("C9" = "#9370DB",  # Medium purple
-                         "WT" = "#A9A9A9")  # Dark grey
-    
-    group_ID <- as.factor(pca_anno_tea$Line)
-    group_ID2 <- as.factor(pca_anno_tea$Condition)
-    res.pca <- PCA(df_pca_tea2, graph = FALSE) 
-    p <- fviz_pca_ind(res.pca,
-                      geom.ind = "point",
-                      fill.ind = group_ID, col.ind = "black",
-                      mean.point = FALSE,
-                      pointshape = 21, pointsize = "cos2",
-                      palette = custom_colors,
-                      addEllipses = TRUE,
-                      col.var = "contrib",
-                      repel = TRUE,
-                      select.var = list(cos2 = 10), legend.title = list(fill = "Group", color="Contrib"),
-                      habillage = group_ID2,
-                      palette.ellipse = combined_colors) +
-      ggtitle("TEA activation") +
-      theme(plot.title = element_text(hjust = 0.5))
-    
-    p2 <- p + scale_color_manual(values = combined_colors, name = "Condition")
-    p2
-  })
-  
-  
-  #UT
-  output$pcaPlot_UT <- renderPlot({
-    df <- unfiltered_data_tea()
-    df_pca_ut <- df %>%
-      dplyr::select(Gene, ends_with("UT_rlog"))
-    colnames(df_pca_ut) = gsub("_rlog$", "", colnames(df_pca_ut))
-    df_pca_ut2 <- df_pca_ut %>%
-      dplyr::filter(Gene != "NA") %>%
-      column_to_rownames("Gene") %>%
-      t() %>%
-      as.data.frame()
-    
-    anno <- annotation_data()
-    pca_anno_ut <- anno %>%
-      dplyr::filter(str_detect(SampleID, "UT"))
-    
-    custom_colors <- c("C9_Line1" = "#6A0DAD",  # Dark purple
-                       "C9_Line2" = "#9370DB",  # Medium purple
-                       "C9_Line3" = "#b27faa", #light purple
-                       "WT_Line1" = "#2F4F4F",  # Dark slate grey
-                       "WT_Line2" = "#A9A9A9",  # Dark grey
-                       "WT_Line3" = "#D3D3D3")  # Light grey
-    
-    combined_colors <- c("C9" = "#9370DB",  # Medium purple
-                         "WT" = "#A9A9A9")  # Dark grey
-    
-    group_ID <- as.factor(pca_anno_ut$Line)
-    group_ID2 <- as.factor(pca_anno_ut$Condition)
-    res.pca <- PCA(df_pca_ut2, graph = FALSE) 
-    
-    p <- fviz_pca_ind(res.pca,
-                      geom.ind = "point",
-                      fill.ind = group_ID, col.ind = "black",
-                      mean.point = FALSE,
-                      pointshape = 21, pointsize = "cos2",
-                      palette = custom_colors,
-                      addEllipses = TRUE,
-                      col.var = "contrib",
-                      repel = TRUE,
-                      select.var = list(cos2 = 10), legend.title = list(fill = "Group", color="Contrib"),
-                      habillage = group_ID2,
-                      palette.ellipse = combined_colors) +
-      ggtitle("Spontaneous firing") +
-      theme(plot.title = element_text(hjust = 0.5))
-    
-    p2 <- p + scale_color_manual(values = combined_colors, name = "Condition")
-    p2
-  })
+  # output$pcaPlot_TTX <- renderPlot({ 
+  #   df <- unfiltered_data_tea()
+  #   df_pca_ttx <- df %>%
+  #     dplyr::select(Gene, ends_with("TTX_rlog"))
+  #   colnames(df_pca_ttx) = gsub("_rlog$", "", colnames(df_pca_ttx))
+  #   df_pca_ttx2 <- df_pca_ttx %>%
+  #     dplyr::filter(Gene != "NA") %>%
+  #     column_to_rownames("Gene") %>%
+  #     t() %>%
+  #     as.data.frame()
+  #   
+  #   anno <- annotation_data()
+  #   pca_anno_ttx <- anno %>%
+  #     dplyr::filter(str_detect(SampleID, "TTX"))
+  #   
+  #   group_ID <- as.factor(pca_anno_ttx$Line)
+  #   group_ID2 <- as.factor(pca_anno_ttx$Condition)
+  #   #colors purple for C9 and grey for WT
+  #   custom_colors <- c("C9_Line1" = "#6A0DAD",  # Dark purple
+  #                      "C9_Line2" = "#9370DB",  # Medium purple
+  #                      "C9_Line3" = "#b27faa", #light purple
+  #                      "WT_Line1" = "#2F4F4F",  # Dark slate grey
+  #                      "WT_Line2" = "#A9A9A9",  # Dark grey
+  #                      "WT_Line3" = "#D3D3D3")  # Light grey
+  #   
+  #   combined_colors <- c("C9" = "#9370DB",  # Medium purple
+  #                        "WT" = "#A9A9A9")  # Dark grey
+  #   
+  #   res.pca <- PCA(df_pca_ttx2, graph = FALSE) 
+  #   p <- fviz_pca_ind(res.pca,
+  #                     geom.ind = "point",
+  #                     fill.ind = group_ID, col.ind = "black",
+  #                     mean.point = FALSE,
+  #                     pointshape = 21, pointsize = "cos2",
+  #                     palette = custom_colors,
+  #                     addEllipses = TRUE,
+  #                     col.var = "contrib",
+  #                     repel = TRUE,
+  #                     select.var = list(cos2 = 10), legend.title = list(fill = "Group", color="Contrib"),
+  #                     habillage = group_ID2,
+  #                     palette.ellipse = combined_colors) +
+  #     ggtitle("TTX silenced") +
+  #     theme(plot.title = element_text(hjust = 0.5))
+  #   
+  #   p2 <- p + scale_color_manual(values = combined_colors, name = "Condition")
+  #   p2
+  #   
+  # })
+  # 
+  # #TEA
+  # output$pcaPlot_TEA <- renderPlot({ 
+  #   df <- unfiltered_data_tea()
+  #   df_pca_tea <- df %>%
+  #     dplyr::select(Gene, ends_with("TEA_rlog"))
+  #   colnames(df_pca_tea) = gsub("_rlog$", "", colnames(df_pca_tea))
+  #   df_pca_tea2 <- df_pca_tea %>%
+  #     dplyr::filter(Gene != "NA") %>%
+  #     column_to_rownames("Gene") %>%
+  #     t() %>%
+  #     as.data.frame()
+  #   
+  #   anno <- annotation_data()
+  #   pca_anno_tea <- anno %>%
+  #     dplyr::filter(str_detect(SampleID, "TEA"))
+  #   
+  #   custom_colors <- c("C9_Line1" = "#6A0DAD",  # Dark purple
+  #                      "C9_Line2" = "#9370DB",  # Medium purple
+  #                      "C9_Line3" = "#b27faa", #light purple
+  #                      "WT_Line1" = "#2F4F4F",  # Dark slate grey
+  #                      "WT_Line2" = "#A9A9A9",  # Dark grey
+  #                      "WT_Line3" = "#D3D3D3")  # Light grey
+  #   
+  #   combined_colors <- c("C9" = "#9370DB",  # Medium purple
+  #                        "WT" = "#A9A9A9")  # Dark grey
+  #   
+  #   group_ID <- as.factor(pca_anno_tea$Line)
+  #   group_ID2 <- as.factor(pca_anno_tea$Condition)
+  #   res.pca <- PCA(df_pca_tea2, graph = FALSE) 
+  #   p <- fviz_pca_ind(res.pca,
+  #                     geom.ind = "point",
+  #                     fill.ind = group_ID, col.ind = "black",
+  #                     mean.point = FALSE,
+  #                     pointshape = 21, pointsize = "cos2",
+  #                     palette = custom_colors,
+  #                     addEllipses = TRUE,
+  #                     col.var = "contrib",
+  #                     repel = TRUE,
+  #                     select.var = list(cos2 = 10), legend.title = list(fill = "Group", color="Contrib"),
+  #                     habillage = group_ID2,
+  #                     palette.ellipse = combined_colors) +
+  #     ggtitle("TEA activation") +
+  #     theme(plot.title = element_text(hjust = 0.5))
+  #   
+  #   p2 <- p + scale_color_manual(values = combined_colors, name = "Condition")
+  #   p2
+  # })
+  # 
+  # 
+  # #UT
+  # output$pcaPlot_UT <- renderPlot({
+  #   df <- unfiltered_data_tea()
+  #   df_pca_ut <- df %>%
+  #     dplyr::select(Gene, ends_with("UT_rlog"))
+  #   colnames(df_pca_ut) = gsub("_rlog$", "", colnames(df_pca_ut))
+  #   df_pca_ut2 <- df_pca_ut %>%
+  #     dplyr::filter(Gene != "NA") %>%
+  #     column_to_rownames("Gene") %>%
+  #     t() %>%
+  #     as.data.frame()
+  #   
+  #   anno <- annotation_data()
+  #   pca_anno_ut <- anno %>%
+  #     dplyr::filter(str_detect(SampleID, "UT"))
+  #   
+  #   custom_colors <- c("C9_Line1" = "#6A0DAD",  # Dark purple
+  #                      "C9_Line2" = "#9370DB",  # Medium purple
+  #                      "C9_Line3" = "#b27faa", #light purple
+  #                      "WT_Line1" = "#2F4F4F",  # Dark slate grey
+  #                      "WT_Line2" = "#A9A9A9",  # Dark grey
+  #                      "WT_Line3" = "#D3D3D3")  # Light grey
+  #   
+  #   combined_colors <- c("C9" = "#9370DB",  # Medium purple
+  #                        "WT" = "#A9A9A9")  # Dark grey
+  #   
+  #   group_ID <- as.factor(pca_anno_ut$Line)
+  #   group_ID2 <- as.factor(pca_anno_ut$Condition)
+  #   res.pca <- PCA(df_pca_ut2, graph = FALSE) 
+  #   
+  #   p <- fviz_pca_ind(res.pca,
+  #                     geom.ind = "point",
+  #                     fill.ind = group_ID, col.ind = "black",
+  #                     mean.point = FALSE,
+  #                     pointshape = 21, pointsize = "cos2",
+  #                     palette = custom_colors,
+  #                     addEllipses = TRUE,
+  #                     col.var = "contrib",
+  #                     repel = TRUE,
+  #                     select.var = list(cos2 = 10), legend.title = list(fill = "Group", color="Contrib"),
+  #                     habillage = group_ID2,
+  #                     palette.ellipse = combined_colors) +
+  #     ggtitle("Spontaneous firing") +
+  #     theme(plot.title = element_text(hjust = 0.5))
+  #   
+  #   p2 <- p + scale_color_manual(values = combined_colors, name = "Condition")
+  #   p2
+  # })
 }
 
 # Run the application 
