@@ -27,7 +27,7 @@ ui <- fluidPage(
       checkboxInput("selectAllGenes", "Select All Genes", FALSE),
       textInput("genes", "Enter Human Gene Symbol (comma-separated with no spaces)", ""),
       br(),
-      tags$q("Example Input: FOS,C9orf72,WASH7P"),
+      tags$q(HTML("Example Input: 'FOS,C9orf72,WASH7P'")),
       actionButton("update", "Update"),
       br(),
       br(),
