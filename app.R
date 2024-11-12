@@ -31,7 +31,7 @@ ui <- fluidPage(
       br(),
       #downloadButton("downloadPlots", "Downlaod All Plots"),   ## UNDER CONSTRUCTION ##
       br(),br(),
-      actionButton("githubButton", label = "Go to Github Repository")
+      #actionButton("githubButton", label = "Go to Github Repository")
     ),
     mainPanel(
       tabsetPanel(
@@ -81,14 +81,26 @@ ui <- fluidPage(
         )
       )
     )
+  ),
+  tags$footer(
+    tags$p("If using this data, please cite <LTG paper citation here>."),
+    tags$a(href = "https://github.com/arhaeusler/LTG_shiny", "Go to Github", target = "_blank"),
+    align = "center",
+    style = "
+    position = fixed;
+    bottom: -20px;
+    width: 100%;
+    padding: 10px;
+    font-size: 12px;
+    "
   )
 )
 
 # Define server logic
 server <- function(input, output, session) {
-  observeEvent(input$githubButton, {
-    browseURL("https://github.com/arhaeusler/LTG_shiny")
-  })
+  #observeEvent(input$githubButton, {
+   # browseURL("https://github.com/arhaeusler/LTG_shiny")
+  #})
   ########## UNDER CONSTRUCTION #####
   # output$downloadPlots <- downloadHandler(
   #   filename = function() {
