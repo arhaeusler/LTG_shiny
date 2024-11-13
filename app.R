@@ -475,7 +475,7 @@ server <- function(input, output, session) {
     df_heatmap = df_heatmap[,grepl("_rlog",colnames(df_heatmap))] 
     colnames(df_heatmap) = gsub("_rlog$", "", colnames(df_heatmap))
     rownames(df_heatmap) = df$Gene
-    df_heatmap$sample = gsub("_KCL$", "_KCl", df_heatmap$sample)
+    colnames(df_heatmap) = gsub("KCL", "KCl", colnames(df_heatmap))
     pheatmap(as.matrix(df_heatmap), main="KCl Heatmap (rlog)")
   })
   
