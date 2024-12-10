@@ -42,12 +42,20 @@ ui <- fluidPage(
                  fluidRow(
                    column(12, plotOutput("heatmapPlot_TEA")),
                    column(12, plotOutput("heatmapPlot_KCl")),
+                   br(),
+                   br(),
+                   tags$b("Samplename Key:"),
+                   tags$p("TEA: Genotype_patient line number_replicate_treatment"),
+                   tags$p("KCl: Treatment_genotype_patient line number_replicate_time of treatment"),
+                   br()
                    )
         ),
         tabPanel("TEA Volcano",
                  fluidRow(
                    column(10, plotOutput("volcanoPlot_C9_UT_TEA")),
-                   column(10, plotOutput("volcanoPlot_C9_TTX_TEA"))
+                   column(10, plotOutput("volcanoPlot_C9_TTX_TEA")),
+                   column(10,plotOutput("volcanoPlot_WT_UT_TEA")),
+                   column(10,plotOutput("volcanoPlot_WT_TTX_TEA"))
                  )
         ),
         tabPanel("KCl Volcano",
@@ -55,7 +63,8 @@ ui <- fluidPage(
                    column(10, plotOutput("volcanoPlot_KCL_C902")),
                    column(10, plotOutput("volcanoPlot_KCL_C906")),
                    column(10, plotOutput("volcanoPlot_KCL_WT02")),
-                   column(10, plotOutput("volcanoPlot_KCL_WT06"))
+                   column(10, plotOutput("volcanoPlot_KCL_WT06")),
+                   tags$b("No depolarization (0), KCl depolarized for 2-hours (2), KCl depolarized for 6-hours (6)")
                  )
         ),
         tabPanel("Expression Plots",
@@ -84,6 +93,16 @@ ui <- fluidPage(
         #)
       )
     )
+  ),
+  tags$header(
+    tags$p("Comparative gene expression analysis of RNAseq data for human i3Neurons from the following conditions: Untreated (UT), TTX-silenced for 16 hours or for 24 hours(TTX), potassium chloride(KCL), or tetraethylammonium (TEA). Two or three independent differentiations for 3 different i3Neurons lines were used for each condition."),
+    align = "center",
+    style = "
+    position = fixed;
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    "
   ),
   tags$footer(
     tags$p("If using this data, please cite <LTG paper citation here>."),
@@ -225,7 +244,7 @@ server <- function(input, output, session) {
       drawConnectors = TRUE,
       widthConnectors = 1.0,
       colConnectors = 'black') +
-      ggtitle("C9: UT vs TEA") +
+      ggtitle("C9-NRE UT vs. C9-NRE TEA") +
       theme(plot.title = element_text(hjust = 0.5))
   })
   #end C9:UT vs TEA
@@ -272,7 +291,99 @@ server <- function(input, output, session) {
       drawConnectors = TRUE,
       widthConnectors = 1.0,
       colConnectors = 'black') +
-      ggtitle("C9: TTX vs TEA") +
+      ggtitle("C9-NRE TTX vs. C9-NRE TEA") +
+      theme(plot.title = element_text(hjust = 0.5))
+  })
+  
+  #WTUT vs WTTEA
+  output$volcanoPlot_WT_UT_TEA <- renderPlot({
+    df <- filtered_data()
+    #top_genes <- df[order(df$pvalue), "Gene"]
+    #top_genes <- ifelse(length(top_genes) > 20, top_genes[1:20], top_genes)
+    
+    df_fc <- df %>%
+      dplyr::select(Gene,ends_with("log2FoldChange")) %>%
+      pivot_longer(cols= ends_with("log2FoldChange"), names_to = "sample", values_to = "log2FoldChange")
+    df_fc$sample = gsub("log2FoldChange$", "", df_fc$sample)
+    df_padj <- df %>%
+      dplyr::select(Gene,ends_with("_padj")) %>%
+      pivot_longer(cols= ends_with("_padj"), names_to = "sample", values_to = "pvalue")
+    df_padj$sample = gsub("_padj$", "", df_padj$sample)
+    
+    df_volcano <- left_join(df_fc,df_padj, by = c("sample", "Gene"))
+    df_volcano[is.na(df_volcano)] = 0
+    
+    df_WT_UT_TEA <- df_volcano %>%
+      filter(str_detect(sample, "WTUT_WTTEA"))
+    
+    EnhancedVolcano(
+      df_WT_UT_TEA,
+      lab = df_WT_UT_TEA$Gene,
+      x = 'log2FoldChange',
+      y = 'pvalue',
+      selectLab = df_WT_UT_TEA$Gene,
+      xlab = bquote(~Log[2]~ 'fold change'),
+      pCutoff = 0.05,
+      FCcutoff = 2.0,
+      pointSize = 4.0,
+      labSize = 4,
+      labCol = 'black',
+      labFace = 'bold',
+      boxedLabels = TRUE,
+      colAlpha = 4/5,
+      legendPosition = 'right',
+      legendLabSize = 14,
+      legendIconSize = 4.0,
+      drawConnectors = TRUE,
+      widthConnectors = 1.0,
+      colConnectors = 'black') +
+      ggtitle("WT UT vs. WT TEA") +
+      theme(plot.title = element_text(hjust = 0.5))
+  })
+  
+  #WTTTX vs WTTEA
+  output$volcanoPlot_WT_TTX_TEA <- renderPlot({
+    df <- filtered_data()
+    #top_genes <- df[order(df$pvalue), "Gene"]
+    #top_genes <- ifelse(length(top_genes) > 20, top_genes[1:20], top_genes)
+    
+    df_fc <- df %>%
+      dplyr::select(Gene,ends_with("_log2FoldChange")) %>%
+      pivot_longer(cols= ends_with("_log2FoldChange"), names_to = "sample", values_to = "log2FoldChange")
+    df_fc$sample = gsub("_log2FoldChange$", "", df_fc$sample)
+    df_padj <- df %>%
+      dplyr::select(Gene,ends_with("_padj")) %>%
+      pivot_longer(cols= ends_with("_padj"), names_to = "sample", values_to = "pvalue")
+    df_padj$sample = gsub("_padj$", "", df_padj$sample)
+    
+    df_volcano <- left_join(df_fc,df_padj, by = c("sample", "Gene"))
+    df_volcano[is.na(df_volcano)] = 0
+    
+    df_WT_TTX_TEA <- df_volcano %>%
+      filter(str_detect(sample, "WTTTX_WTTEA"))
+    
+    EnhancedVolcano(
+      df_WT_TTX_TEA,
+      lab = df_WT_TTX_TEA$Gene,
+      x = 'log2FoldChange',
+      y = 'pvalue',
+      selectLab = df_WT_TTX_TEA$Gene,
+      xlab = bquote(~Log[2]~ 'fold change'),
+      pCutoff = 0.05,
+      FCcutoff = 2.0,
+      pointSize = 4.0,
+      labSize = 4,
+      labCol = 'black',
+      labFace = 'bold',
+      boxedLabels = TRUE,
+      colAlpha = 4/5,
+      legendPosition = 'right',
+      legendLabSize = 14,
+      legendIconSize = 4.0,
+      drawConnectors = TRUE,
+      widthConnectors = 1.0,
+      colConnectors = 'black') +
+      ggtitle("WT TTX vs. WT TEA") +
       theme(plot.title = element_text(hjust = 0.5))
   })
   # end TEA volcano plots
