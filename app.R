@@ -64,10 +64,10 @@ ui <- fluidPage(
                    tags$b("No depolarization (0), KCl depolarized for 2-hours (2), KCl depolarized for 6-hours (6)"),
                    br(),
                    br(),
-                   column(10, plotOutput("volcanoPlot_KCL_C902")),
-                   column(10, plotOutput("volcanoPlot_KCL_C906")),
-                   column(10, plotOutput("volcanoPlot_KCL_WT02")),
-                   column(10, plotOutput("volcanoPlot_KCL_WT06"))
+                   column(8, plotOutput("volcanoPlot_KCL_C902")),
+                   column(8, plotOutput("volcanoPlot_KCL_C906")),
+                   column(8, plotOutput("volcanoPlot_KCL_WT02")),
+                   column(8, plotOutput("volcanoPlot_KCL_WT06"))
                  )
         ),
         tabPanel("Expression Plots",
