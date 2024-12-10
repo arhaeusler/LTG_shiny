@@ -98,7 +98,7 @@ ui <- fluidPage(
     )
   ),
   tags$header(
-    tags$p("Comparative gene expression analysis of RNAseq data for human i3Neurons from the following conditions: Untreated (UT), TTX-silenced for 16 hours or for 24 hours(TTX), potassium chloride(KCL), or tetraethylammonium (TEA). Two or three independent differentiations for 3 different i3Neurons lines were used for each condition."),
+    tags$p("Comparative gene expression analysis of RNAseq data for human i3Neurons from the following conditions: Untreated (UT), TTX-silenced for 16 hours (KCL Time 0) or for 24 hours(TTX), potassium chloride(KCL), or tetraethylammonium (TEA). Two or three independent differentiations for 3 different i3Neurons lines were used for each condition."),
     align = "center",
     style = "
     position = fixed;
