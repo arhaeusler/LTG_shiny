@@ -38,6 +38,13 @@ ui <- fluidPage(
     
     mainPanel(
       tabsetPanel(
+        tabPanel("Expression Plots",
+                 fluidRow(
+                   column(6, plotOutput("expressionPlot_UT")),
+                   column(6, plotOutput("expressionPlot_TTX")),
+                   column(6, plotOutput("expressionPlot_TEA"))
+                 )
+        ),
         tabPanel("Heatmaps",
                  fluidRow(
                    column(12, plotOutput("heatmapPlot_TEA")),
@@ -68,13 +75,6 @@ ui <- fluidPage(
                    column(12, plotOutput("volcanoPlot_KCL_C906")),
                    column(12, plotOutput("volcanoPlot_KCL_WT02")),
                    column(12, plotOutput("volcanoPlot_KCL_WT06"))
-                 )
-        ),
-        tabPanel("Expression Plots",
-                 fluidRow(
-                   column(6, plotOutput("expressionPlot_UT")),
-                   column(6, plotOutput("expressionPlot_TTX")),
-                   column(6, plotOutput("expressionPlot_TEA"))
                  )
         ),
         tabPanel("Expression over KCl depolarization time",
@@ -108,7 +108,7 @@ ui <- fluidPage(
     "
   ),
   tags$footer(
-    tags$p("If using this data, please cite <LTG paper citation here>."),
+    tags$p("If using this data, please cite: Ghaffari, L. T., Welebob, E., Boehringer, A., Cyliax, K., Pasinelli, P., Trotti, D., & Haeusler, A. R. (2025). Neuronal Activity-Dependent Gene Dysregulation in C9orf72 i3Neuronal Models of ALS/FTD Pathogenesis. bioRxiv : the preprint server for biology, 2025.01.27.632228. https://doi.org/10.1101/2025.01.27.632228."),
     tags$a(href = "https://github.com/arhaeusler/LTG_shiny", "Go to Github", target = "_blank"),
     align = "center",
     style = "
