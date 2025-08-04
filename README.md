@@ -11,6 +11,6 @@ To launch shiny app in R, use shiny(v1.9.1) and the command:
   runGitHub("LTG_shiny", "arhaeusler")
 
 If using, please cite paper:
-(citation here)
+Ghaffari, L. T., Welebob, E., Boehringer, A., Cyliax, K., Pasinelli, P., Trotti, D., & Haeusler, A. R. (2025). Neuronal Activity-Dependent Gene Dysregulation in C9orf72 i3Neuronal Models of ALS/FTD Pathogenesis. bioRxiv : the preprint server for biology, 2025.01.27.632228. https://doi.org/10.1101/2025.01.27.632228.
 
-Publicly available RNA-seq data found on NCBI GEO (GEO accession # here)
+Publicly available RNA-seq data found on NCBI GEO GSE275765
